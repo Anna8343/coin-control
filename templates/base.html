@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Coin Control{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav class="cc-nav">
+    <a href="{{ url_for('index') }}" class="cc-logo">
+        <div class="cc-logo-icon">₴</div>
+        Coin Control
+    </a>
+    <div class="cc-nav-links">
+        <a href="{{ url_for('index') }}" class="cc-nav-link {% if request.endpoint == 'index' %}active{% endif %}">
+            <i class="ti ti-layout-dashboard"></i> Огляд
+        </a>
+        <a href="{{ url_for('accounts') }}" class="cc-nav-link {% if 'account' in request.endpoint %}active{% endif %}">
+            <i class="ti ti-wallet"></i> Рахунки
+        </a>
+        <a href="{{ url_for('categories') }}" class="cc-nav-link {% if 'categor' in request.endpoint %}active{% endif %}">
+            <i class="ti ti-tags"></i> Категорії
+        </a>
+    </div>
+</nav>
+
+<div class="cc-flash">
+    {% for cat, msg in get_flashed_messages(with_categories=true) %}
+        <div class="cc-alert cc-alert-{{ 'success' if cat == 'success' else 'danger' }}">
+            <span>{{ msg }}</span>
+            <button class="cc-alert-close" onclick="this.parentElement.remove()">×</button>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="cc-page">
+    {% block content %}{% endblock %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    setTimeout(() => {
+        document.querySelectorAll('.cc-alert').forEach(a => a.remove());
+    }, 3500);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Редагувати' if category else 'Нова категорія' }} — Coin Control{% endblock %}
+{% block content %}
+<a href="{{ url_for('categories') }}" class="cc-back"><i class="ti ti-arrow-left"></i> Назад</a>
+
+<div class="cc-card" style="max-width:460px;">
+  <div style="font-size:18px;font-weight:600;color:#1a1a2e;margin-bottom:24px;display:flex;align-items:center;gap:10px;">
+    <i class="ti ti-tag" style="color:var(--cc-gold);font-size:20px;"></i>
+    {{ 'Редагувати категорію' if category else 'Нова категорія' }}
+  </div>
+
+  <form method="POST">
+    <div style="margin-bottom:16px;">
+      <label class="cc-form-label">Назва *</label>
+      <input type="text" name="name" class="cc-form-input"
+             value="{{ category.name if category else '' }}"
+             placeholder="Наприклад: Їжа" required>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;">
+      <div>
+        <label class="cc-form-label">Колір</label>
+        <input type="color" name="color" class="cc-form-input" style="height:42px;padding:4px 8px;cursor:pointer;"
+               value="{{ category.color if category else '#f0c040' }}">
+      </div>
+      <div>
+        <label class="cc-form-label">Іконка (emoji)</label>
+        <input type="text" name="icon" class="cc-form-input"
+               value="{{ category.icon if category else '💰' }}"
+               placeholder="💰" maxlength="4">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button type="submit" class="cc-submit-btn">
+        <i class="ti ti-check"></i> {{ 'Зберегти' if category else 'Створити' }}
+      </button>
+      <a href="{{ url_for('categories') }}" class="cc-cancel-btn">Скасувати</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

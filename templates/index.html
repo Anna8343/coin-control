@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Огляд — Coin Control{% endblock %}
+{% block content %}
+
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;">
+  <div class="cc-stat">
+    <div class="cc-stat-label"><i class="ti ti-arrow-up-circle" style="color:#3B6D11;font-size:15px;"></i> Дохід</div>
+    <div class="cc-stat-val" style="color:#3B6D11;">₴ {{ "%.0f"|format(total_income) }}</div>
+    <div class="cc-stat-sub">цей місяць</div>
+  </div>
+  <div class="cc-stat">
+    <div class="cc-stat-label"><i class="ti ti-arrow-down-circle" style="color:#A32D2D;font-size:15px;"></i> Витрати</div>
+    <div class="cc-stat-val" style="color:#A32D2D;">₴ {{ "%.0f"|format(total_expense) }}</div>
+    <div class="cc-stat-sub">{{ transactions|length }} транзакцій</div>
+  </div>
+  <div class="cc-stat">
+    <div class="cc-stat-label"><i class="ti ti-wallet" style="color:#185FA5;font-size:15px;"></i> Баланс</div>
+    <div class="cc-stat-val" style="color:{{ '#3B6D11' if balance >= 0 else '#A32D2D' }};">₴ {{ "%.0f"|format(balance) }}</div>
+    <div class="cc-stat-sub">залишок</div>
+  </div>
+</div>
+
+{% if accounts %}
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:16px;">
+  {% for acc in accounts %}
+  <div class="cc-account-card">
+    <div class="cc-account-icon" style="background:{{ acc.color }}22;">
+      <span>{{ acc.icon }}</span>
+    </div>
+    <div>
+      <div style="font-size:13px;font-weight:600;color:#1a1a2e;">{{ acc.name }}</div>
+      <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-top:2px;">
+        {{ "%.0f"|format(acc.balance) }}
+        <span class="cc-currency-tag">{{ acc.currency }}</span>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% if total_income > 0 %}
+{% set pct = (total_expense / total_income * 100)|round(1) %}
+<div class="cc-progress-wrap">
+  <div class="cc-progress-label">
+    <span>Витрачено від доходу</span>
+    <span style="font-weight:600;color:#1a1a2e;">{{ pct }}%</span>
+  </div>
+  <div class="cc-progress-track">
+    <div class="cc-progress-fill" style="width:{{ [pct,100]|min }}%;"></div>
+  </div>
+  <div class="cc-progress-meta">
+    <span>₴{{ "%.0f"|format(total_expense) }} витрачено</span>
+    <span>₴{{ "%.0f"|format(balance) }} залишилось</span>
+  </div>
+</div>
+{% endif %}
+
+<div class="cc-list-wrap">
+  <div class="cc-list-head">
+    <span class="cc-list-title">Transactions</span>
+    <a href="{{ url_for('new_transaction') }}" class="cc-add-btn">
+      <i class="ti ti-plus"></i> New
+    </a>
+  </div>
+
+  <form method="GET" action="{{ url_for('index') }}" class="cc-filter-bar">
+    <i class="ti ti-calendar" style="color:#aaa;font-size:16px;"></i>
+    <input type="date" name="date_from" class="cc-filter-input" value="{{ date_from }}">
+    <span style="color:#aaa;font-size:13px;">—</span>
+    <input type="date" name="date_to" class="cc-filter-input" value="{{ date_to }}">
+    <button type="submit" class="cc-filter-btn"><i class="ti ti-filter"></i> Filter</button>
+    {% if date_from or date_to %}
+      <a href="{{ url_for('index') }}" class="cc-filter-clear"><i class="ti ti-x"></i> Скинути</a>
+    {% endif %}
+  </form>
+
+  {% if transactions %}
+    {% for t in transactions %}
+    <div class="cc-row" onclick="location.href='{{ url_for('view_transaction', id=t.id) }}'">
+      <div class="cc-cat-icon" style="background:{{ t.category_color ~ '22' if t.category_color else '#f0f0f0' }};">
+        {% if t.category_icon %}{{ t.category_icon }}{% else %}<i class="ti ti-currency-hryvnia" style="color:#aaa;"></i>{% endif %}
+      </div>
+      <div class="cc-row-info">
+        <div class="cc-row-title">{{ t.title }}</div>
+        <div class="cc-row-meta">
+          {{ t.date.strftime('%d.%m.%Y') }}
+          {% if t.category_name %} · {{ t.category_name }}{% endif %}
+          {% if t.account_name %} · {{ t.account_name }}{% endif %}
+        </div>
+      </div>
+      <span class="cc-badge {{ 'cc-badge-in' if t.type == 'income' else 'cc-badge-ex' }}">
+        {{ 'Дохід' if t.type == 'income' else 'Витрата' }}
+      </span>
+      <span class="cc-amount {{ 'cc-amount-in' if t.type == 'income' else 'cc-amount-ex' }}">
+        {{ '+' if t.type == 'income' else '−' }}{{ "%.0f"|format(t.amount) }}
+        <span class="cc-currency-tag">{{ t.currency }}</span>
+      </span>
+      <div style="display:flex;gap:6px;" onclick="event.stopPropagation()">
+        <a href="{{ url_for('edit_transaction', id=t.id) }}" class="cc-btn-icon" title="Редагувати"><i class="ti ti-edit"></i></a>
+        <form method="POST" action="{{ url_for('delete_transaction', id=t.id) }}" onsubmit="return confirm('Видалити transaction?')">
+          <button type="submit" class="cc-btn-icon danger" title="Видалити"><i class="ti ti-trash"></i></button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="cc-empty">
+      <div class="cc-empty-icon"><i class="ti ti-receipt-off"></i></div>
+      <p style="color:#aaa;font-size:14px;">Транзакцій поки немає</p>
+      <a href="{{ url_for('new_transaction') }}" class="cc-add-btn" style="display:inline-flex;margin-top:16px;">
+        <i class="ti ti-plus"></i> New
+      </a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

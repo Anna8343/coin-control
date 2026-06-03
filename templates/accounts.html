@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Рахунки — Coin Control{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+  <div style="font-size:18px;font-weight:600;color:#1a1a2e;display:flex;align-items:center;gap:8px;">
+    <i class="ti ti-wallet" style="color:var(--cc-gold);"></i> Рахунки
+  </div>
+  <a href="{{ url_for('new_account') }}" class="cc-add-btn"><i class="ti ti-plus"></i> New</a>
+</div>
+
+{% if accounts %}
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;">
+  {% for acc in accounts %}
+  <div style="background:#fff;border:1px solid #e8e9ec;border-radius:14px;padding:20px;">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
+      <div style="width:46px;height:46px;border-radius:12px;background:{{ acc.color }}22;display:flex;align-items:center;justify-content:center;font-size:22px;">{{ acc.icon }}</div>
+      <div>
+        <div style="font-size:15px;font-weight:600;color:#1a1a2e;">{{ acc.name }}</div>
+        <div style="font-size:12px;color:#aaa;">{{ acc.currency }}</div>
+      </div>
+    </div>
+    <div style="font-size:26px;font-weight:700;color:{{ '#3B6D11' if acc.balance >= 0 else '#A32D2D' }};margin-bottom:14px;">
+      {{ "%.2f"|format(acc.balance) }} <span class="cc-currency-tag">{{ acc.currency }}</span>
+    </div>
+    <div style="display:flex;gap:8px;border-top:1px solid #f0f0f0;padding-top:12px;">
+      <a href="{{ url_for('edit_account', id=acc.id) }}" class="cc-btn-icon" title="Редагувати"><i class="ti ti-edit"></i></a>
+      <form method="POST" action="{{ url_for('delete_account', id=acc.id) }}"
+            onsubmit="return confirm('Видалити рахунок?')">
+        <button type="submit" class="cc-btn-icon danger" title="Видалити"><i class="ti ti-trash"></i></button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="cc-list-wrap">
+  <div class="cc-empty">
+    <div class="cc-empty-icon"><i class="ti ti-wallet-off"></i></div>
+    <p style="color:#aaa;font-size:14px;">Рахунків поки немає</p>
+    <a href="{{ url_for('new_account') }}" class="cc-add-btn" style="display:inline-flex;margin-top:16px;">
+      <i class="ti ti-plus"></i> New
+    </a>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}{{ transaction.title }} — Coin Control{% endblock %}
+{% block content %}
+<a href="{{ url_for('index') }}" class="cc-back"><i class="ti ti-arrow-left"></i> Назад</a>
+
+<div class="cc-card">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;margin-bottom:20px;">
+    <div>
+      <div style="font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">
+        {% if transaction.category_name %}{{ transaction.category_name }} · {% endif %}
+        {{ 'Дохід' if transaction.type == 'income' else 'Витрата' }}
+      </div>
+      <div style="font-size:32px;font-weight:700;color:{{ '#3B6D11' if transaction.type == 'income' else '#A32D2D' }};">
+        {{ '+' if transaction.type == 'income' else '−' }}{{ "%.2f"|format(transaction.amount) }}
+        <span class="cc-currency-tag" style="font-size:14px;">{{ transaction.currency }}</span>
+      </div>
+      <div style="font-size:18px;font-weight:500;color:#1a1a2e;margin-top:6px;">{{ transaction.title }}</div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <a href="{{ url_for('edit_transaction', id=transaction.id) }}" class="cc-add-btn">
+        <i class="ti ti-edit"></i> Редагувати
+      </a>
+      <form method="POST" action="{{ url_for('delete_transaction', id=transaction.id) }}"
+            onsubmit="return confirm('Видалити transaction?')">
+        <button type="submit" style="background:#fcebeb;color:#A32D2D;border:1px solid #f09595;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;">
+          <i class="ti ti-trash"></i> Видалити
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div style="border-top:1px solid #f0f0f0;padding-top:20px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+      <div>
+        <div style="font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Дата</div>
+        <div style="font-size:15px;font-weight:500;color:#1a1a2e;">{{ transaction.date.strftime('%d.%m.%Y') }}</div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Рахунок</div>
+        <div style="font-size:15px;font-weight:500;color:#1a1a2e;">{{ transaction.account_name or '—' }}</div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Категорія</div>
+        <div style="font-size:15px;font-weight:500;color:#1a1a2e;">{{ transaction.category_name or '—' }}</div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Додано</div>
+        <div style="font-size:15px;font-weight:500;color:#1a1a2e;">{{ transaction.created_at.strftime('%d.%m.%Y %H:%M') }}</div>
+      </div>
+    </div>
+    {% if transaction.note %}
+    <div style="background:#fafafa;border:1px solid #f0f0f0;border-radius:10px;padding:14px 16px;">
+      <div style="font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;">Нотатка</div>
+      <div style="font-size:14px;color:#555;">{{ transaction.note }}</div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

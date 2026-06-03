@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Редагувати' if account else 'Новий рахунок' }} — Coin Control{% endblock %}
+{% block content %}
+<a href="{{ url_for('accounts') }}" class="cc-back"><i class="ti ti-arrow-left"></i> Назад</a>
+
+<div class="cc-card" style="max-width:460px;">
+  <div style="font-size:18px;font-weight:600;color:#1a1a2e;margin-bottom:24px;display:flex;align-items:center;gap:10px;">
+    <i class="ti ti-wallet" style="color:var(--cc-gold);font-size:20px;"></i>
+    {{ 'Редагувати рахунок' if account else 'Новий рахунок' }}
+  </div>
+
+  <form method="POST">
+    <div style="margin-bottom:16px;">
+      <label class="cc-form-label">Назва *</label>
+      <input type="text" name="name" class="cc-form-input"
+             value="{{ account.name if account else '' }}"
+             placeholder="Наприклад: Готівка" required>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+      <div>
+        <label class="cc-form-label">Валюта</label>
+        <select name="currency" class="cc-form-input">
+          <option value="UAH" {{ 'selected' if account and account.currency == 'UAH' }}>UAH ₴</option>
+          <option value="USD" {{ 'selected' if account and account.currency == 'USD' }}>USD $</option>
+          <option value="EUR" {{ 'selected' if account and account.currency == 'EUR' }}>EUR €</option>
+        </select>
+      </div>
+      {% if not account %}
+      <div>
+        <label class="cc-form-label">Початковий баланс</label>
+        <input type="number" name="balance" class="cc-form-input" step="0.01" value="0" placeholder="0.00">
+      </div>
+      {% endif %}
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;">
+      <div>
+        <label class="cc-form-label">Колір</label>
+        <input type="color" name="color" class="cc-form-input" style="height:42px;padding:4px 8px;cursor:pointer;"
+               value="{{ account.color if account else '#378ADD' }}">
+      </div>
+      <div>
+        <label class="cc-form-label">Іконка (emoji)</label>
+        <input type="text" name="icon" class="cc-form-input"
+               value="{{ account.icon if account else '💳' }}"
+               placeholder="💳" maxlength="4">
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;">
+      <button type="submit" class="cc-submit-btn">
+        <i class="ti ti-check"></i> {{ 'Зберегти' if account else 'Створити' }}
+      </button>
+      <a href="{{ url_for('accounts') }}" class="cc-cancel-btn">Скасувати</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

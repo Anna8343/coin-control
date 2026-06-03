@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Категорії — Coin Control{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+  <div style="font-size:18px;font-weight:600;color:#1a1a2e;display:flex;align-items:center;gap:8px;">
+    <i class="ti ti-tags" style="color:var(--cc-gold);"></i> Категорії
+  </div>
+  <a href="{{ url_for('new_category') }}" class="cc-add-btn"><i class="ti ti-plus"></i> New</a>
+</div>
+
+{% if categories %}
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
+  {% for cat in categories %}
+  <div style="background:#fff;border:1px solid #e8e9ec;border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:12px;">
+    <div style="width:42px;height:42px;border-radius:11px;background:{{ cat.color }}22;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">{{ cat.icon }}</div>
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:14px;font-weight:600;color:#1a1a2e;">{{ cat.name }}</div>
+      <div style="font-size:12px;color:#aaa;margin-top:2px;">{{ cat.transaction_count }} транзакцій</div>
+    </div>
+    <div style="display:flex;gap:6px;flex-shrink:0;">
+      <a href="{{ url_for('edit_category', id=cat.id) }}" class="cc-btn-icon" title="Редагувати"><i class="ti ti-edit"></i></a>
+      <form method="POST" action="{{ url_for('delete_category', id=cat.id) }}"
+            onsubmit="return confirm('Видалити категорію?')">
+        <button type="submit" class="cc-btn-icon danger" title="Видалити"><i class="ti ti-trash"></i></button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="cc-list-wrap">
+  <div class="cc-empty">
+    <div class="cc-empty-icon"><i class="ti ti-tags-off"></i></div>
+    <p style="color:#aaa;font-size:14px;">Категорій поки немає</p>
+    <a href="{{ url_for('new_category') }}" class="cc-add-btn" style="display:inline-flex;margin-top:16px;">
+      <i class="ti ti-plus"></i> New
+    </a>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
